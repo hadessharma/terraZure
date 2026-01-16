@@ -139,6 +139,7 @@ export async function POST(req, res) {
       msg: "Resource created successfully.",
       status: 201,
       data: result,
+      resource: resource,
     });
   } catch (error) {
     console.error("Error:", error);

@@ -10,16 +10,16 @@ import LoginModal from "../modals/login";
 export default function Navbar() {
   const { data: session } = useSession();
   return (
-    <div className="px-6 w-full h-[60px] flex items-center justify-between shadow-md">
+    <div className="px-6 w-full h-[60px] flex items-center justify-between border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="text-xl flex justify-center items-center">
         <p className="text-xl font-bold">Terra</p>
-        <p className="ml-[2px] font-bold text-red-500 -my-1">Zure</p>
+        <p className="ml-[2px] font-bold text-primary -my-1">Zure</p>
       </div>
-      <div className="flex items-center justify-center gap-4">
+      <div className="flex items-center justify-center gap-6">
         {links.map((l, i) => (
           <Link
             key={i}
-            className="text-sm font-semibold hover:text-red-500 transition-all"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
             href={l.href}
           >
             {l.label}

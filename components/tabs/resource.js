@@ -39,6 +39,19 @@ export default function ResourceTabs({
     }
   };
 
+  const handleDelete = async (id) => {
+    if (confirm("Are you sure you want to delete this resource? This action is irreversible.")) {
+      try {
+        await axios.delete(`/api/resource/single/${id}`);
+        // Reload to update state
+        window.location.reload();
+      } catch (err) {
+        console.error(err);
+        alert("Failed to delete resource");
+      }
+    }
+  };
+
   return (
     <Tabs defaultValue="all" className="w-full">
       <TabsList className="flex flex-wrap h-auto justify-start">
@@ -66,7 +79,10 @@ export default function ResourceTabs({
                 <button className="shadow-md p-2 rounded-md cursor-pointer border-2 text-sm font-semibold text-green-500">
                   <Edit2 size={22} />
                 </button>
-                <button className="shadow-md p-2 rounded-md cursor-pointer border-2 text-sm font-semibold text-red-500">
+                <button
+                  className="shadow-md p-2 rounded-md cursor-pointer border-2 text-sm font-semibold text-red-500 hover:bg-red-50"
+                  onClick={() => handleDelete(r._id)}
+                >
                   <Trash2 size={22} />
                 </button>
               </div>
@@ -89,7 +105,10 @@ export default function ResourceTabs({
                 <button className="shadow-md p-2 rounded-md cursor-pointer border-2 text-sm font-semibold text-green-500">
                   <Edit2 size={22} />
                 </button>
-                <button className="shadow-md p-2 rounded-md cursor-pointer border-2 text-sm font-semibold text-red-500">
+                <button
+                  className="shadow-md p-2 rounded-md cursor-pointer border-2 text-sm font-semibold text-red-500 hover:bg-red-50"
+                  onClick={() => handleDelete(r._id)}
+                >
                   <Trash2 size={22} />
                 </button>
               </div>

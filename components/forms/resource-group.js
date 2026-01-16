@@ -66,6 +66,11 @@ export default function ResourceGroupForm({ type, sid }) {
       setLoading(false);
       toast({ description: res.data.msg });
       form.reset();
+
+      // Navigate to the new resource page
+      if (res.data.resource && res.data.resource._id) {
+        router.push(`/resource/${res.data.resource._id}`);
+      }
     } catch (err) {
       console.log(err);
       setLoading(false);
