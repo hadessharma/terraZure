@@ -3,9 +3,11 @@ import { NextResponse } from "next/server";
 
 import User from "@/models/user";
 import Subscription from "@/models/subscription";
+import connectToDB from "@/lib/db";
 
 export async function POST(req, res) {
   try {
+    await connectToDB();
     const values = await req.json();
 
     const session = await getServerSession();

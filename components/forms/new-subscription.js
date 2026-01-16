@@ -38,6 +38,7 @@ export default function NewSubscriptionForm({ loadUser }) {
       tenantId: "",
       clientId: "",
       clientSecret: "",
+      isDemo: false,
     },
   });
 
@@ -54,6 +55,18 @@ export default function NewSubscriptionForm({ loadUser }) {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const createDemo = () => {
+    form.setValue("subscriptionName", "Demo Subscription");
+    form.setValue("subscriptionId", "demo-subscription-id");
+    form.setValue("tenantId", "demo-tenant-id");
+    form.setValue("clientId", "demo-client-id");
+    form.setValue("clientSecret", "demo-client-secret");
+    form.setValue("isDemo", true);
+
+    // Manually trigger submit after state update
+    form.handleSubmit(onSubmit)();
   };
 
   return (
@@ -152,8 +165,11 @@ export default function NewSubscriptionForm({ loadUser }) {
             Click to know how to get these details.
           </a>
         </div>
-        <DialogFooter>
-          <Button disabled={loading}>Create</Button>
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button disabled={loading} type="button" variant="secondary" onClick={createDemo}>
+            Demo Mode
+          </Button>
+          <Button disabled={loading} type="submit">Create</Button>
         </DialogFooter>
       </form>
     </Form>

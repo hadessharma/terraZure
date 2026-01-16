@@ -9,6 +9,10 @@ const subscriptionSchema = new Schema(
       type: String,
       required: true,
     },
+    isDemo: {
+      type: Boolean,
+      default: false,
+    },
     subscriptionId: {
       type: String,
       required: true,
