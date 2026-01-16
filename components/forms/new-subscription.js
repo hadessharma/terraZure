@@ -25,6 +25,7 @@ const formSchema = z.object({
   tenantId: z.string().min(2, "Tenant ID is required"),
   clientId: z.string().min(2, "Client ID is required"),
   clientSecret: z.string().min(2, "Client Secret is required"),
+  isDemo: z.boolean().optional(),
 });
 
 export default function NewSubscriptionForm({ loadUser }) {
