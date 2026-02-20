@@ -5,3 +5,5 @@ azure-mgmt-resource
 azure-identity
 pydantic
 python-dotenv
+sqlalchemy
+psycopg2-binary
