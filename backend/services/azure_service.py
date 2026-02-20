@@ -1,42 +1,47 @@
 from azure.identity import ClientSecretCredential
 from azure.mgmt.resource import ResourceManagementClient
-from core.config import settings
+from sqlalchemy.orm import Session
+from models.subscription import Subscription
 
-def get_azure_credentials():
-    if not all([settings.AZURE_TENANT_ID, settings.AZURE_CLIENT_ID, settings.AZURE_CLIENT_SECRET]):
+def get_azure_credentials(sub: Subscription):
+    if not all([sub.azure_tenant_id, sub.azure_client_id, sub.azure_client_secret]):
         return None
     return ClientSecretCredential(
-        tenant_id=settings.AZURE_TENANT_ID,
-        client_id=settings.AZURE_CLIENT_ID,
-        client_secret=settings.AZURE_CLIENT_SECRET
+        tenant_id=sub.azure_tenant_id,
+        client_id=sub.azure_client_id,
+        client_secret=sub.azure_client_secret
     )
 
-def list_azure_resources():
-    try:
-        credential = get_azure_credentials()
-        if not credential or not settings.AZURE_SUBSCRIPTION_ID:
-            return []
-        
-        resource_client = ResourceManagementClient(credential, settings.AZURE_SUBSCRIPTION_ID)
-        
-        resources = []
-        # list() returns an iterator of GenericResource
-        for resource in resource_client.resources.list():
-            # Simplify resource type from "Microsoft.Compute/virtualMachines" -> "Virtual Machine"
-            type_parts = resource.type.split('/')
-            simple_type = type_parts[-1] if type_parts else resource.type
+def list_azure_resources(db: Session):
+    azure_subs = db.query(Subscription).filter(Subscription.provider == "Azure", Subscription.is_active == True).all()
+    all_resources = []
+    
+    for sub in azure_subs:
+        try:
+            credential = get_azure_credentials(sub)
+            if not credential or not sub.azure_subscription_id:
+                continue
             
-            resources.append({
-                "id": resource.id,
-                "name": resource.name,
-                "type": simple_type,
-                "state": "active", # Azure RM generic list doesn't always provide state easily
-                "location": resource.location,
-                "provider": "Azure",
-                "resource_type": resource.type,
-                "region": resource.location
-            })
-        return resources
-    except Exception as e:
-        print(f"Error fetching Azure resources: {e}")
-        return []
+            resource_client = ResourceManagementClient(credential, sub.azure_subscription_id)
+            
+            # list() returns an iterator of GenericResource
+            for resource in resource_client.resources.list():
+                # Simplify resource type from "Microsoft.Compute/virtualMachines" -> "Virtual Machine"
+                type_parts = resource.type.split('/')
+                simple_type = type_parts[-1] if type_parts else resource.type
+                
+                all_resources.append({
+                    "id": resource.id,
+                    "name": resource.name,
+                    "type": simple_type,
+                    "state": "active", 
+                    "location": resource.location,
+                    "provider": "Azure",
+                    "account_name": sub.name,
+                    "resource_type": resource.type,
+                    "region": resource.location
+                })
+        except Exception as e:
+            print(f"Error fetching Azure resources for sub {sub.name}: {e}")
+            
+    return all_resources
